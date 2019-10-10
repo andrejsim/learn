@@ -1,0 +1,93 @@
+workspace:
+  base: /drone
+  path: src
+
+# Because of drone not building current version of pull request otherwise
+clone:
+  git:
+    image: plugins/git:next
+    pull: true
+    tags: true
+
+pipeline:
+  ecr_authenticate:
+    image: meteogroup/awscli
+    volumes:
+      - ${HOME}/.aws:/root/.aws
+    commands:
+      - '[[ -n "$CI_SYSTEM_HOST" ]] && export AWS_CONFIG_FILE=$CI_WORKSPACE/.drone_aws_config'
+      - aws ecr get-login --no-include-email > .docker_login.tmp.sh
+    when:
+      event: push
+
+  pull_image:
+    image: docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    commands:
+      - source ./.docker_login.tmp.sh
+      - rm ./.docker_login.tmp.sh
+      - docker pull dkr.ecr..amazonaws.com/json-schema-to-uml
+    when:
+      event: push
+  build_graph:
+    image: docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    commands:
+      - mkdir -p $CI_WORKSPACE/output/
+      - cat $CI_WORKSPACE/openAPI/schemas.json | docker run --rm -i json-schema-to-uml | docker run --rm -i think/plantuml > $CI_WORKSPACE/output/output.svg
+    when:
+      event: push
+  upload_to_s3:
+    image: meteogroup/awscli
+    volumes:
+    - ${HOME}/.aws:/root/.aws
+    commands:
+    - '[[ -n "$CI_SYSTEM_HOST" ]] && export AWS_CONFIG_FILE=$CI_WORKSPACE/.drone_aws_config'
+    - aws s3 sync $CI_WORKSPACE/output/ s3://datafabric-documentation/${DRONE_COMMIT_BRANCH}/${DRONE_COMMIT_SHA}/ || echo "s3 upload failed"
+    when:
+      event: push
+
+  aws_authenticate:
+    image: meteogroup/drone-aws-auth
+    pull: true
+    volumes:
+      - ${HOME}/.aws:/root/.aws
+    target_role: drone-infra-role
+    prod_account: 43523453245324
+    nonprod_account: 234534523453452 
+    secrets: [EXTERNAL_ID]
+
+  test:
+    image: golang:1.11
+    pull: true
+    commands:
+      - go install github.com/golang/mock/mockgen
+      - cd cmd/merino; go generate; cd -
+      - go test ./...
+
+  push:
+    image: golang:1.11
+    pull: true
+    commands:
+      - . ./.drone_aws_credentials.generated.sh #source only works in bash shells, go uses sh
+      - apt-get update; apt-get install -y awscli jq zip
+      - scripts/packageAll.sh
+    when:
+      event:
+        exclude:
+        - pull_request
+
+  create_pr:
+    image: meteogroup/terraform:0.11.11-hub
+    pull: true
+    secrets: [ github_token, github_user ]
+    commands:
+      - scripts/update-vars-file.sh
+    when:
+      event:
+        exclude:
+        - pull_request
+      branch:
+        - master
