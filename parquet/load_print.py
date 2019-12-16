@@ -38,6 +38,7 @@ def main():
     for f in [f1, fp1, f2, fp2,  fp3]:
         print("{}           {} MB".format(f, size_mb(os.path.getsize(f))))
 
+    print(fp3.info())
 
 if __name__ == '__main__':
     main()
