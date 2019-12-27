@@ -1,8 +1,11 @@
 import os
 import time
+import timeit
 
 
 def io_timer():
+    global timing
+
     timing = os.times()
     return timing.elapsed - (timing.system + timing.user)
 
@@ -21,12 +24,15 @@ def measure_time(f):
 
 if __name__ == "__main__":
     timing = os.times()
+
     print(timing.elapsed)
     print(timing.system)
     print(timing.user)
 
-    #odd
+    # odd
     print(io_timer())
 
-    #surround with timmer
+    # surround with timmer
     print(measure_time(io_timer()))
+
+    timeit.timeit('io_timer()', number=100)
