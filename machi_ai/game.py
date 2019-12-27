@@ -13,7 +13,7 @@ import os
 
 class Game(object):
 	def __init__(self, id, pre_existing_players = None, name='', options=None):
-		if 'full_record' in options and options['full_record'] <> '':
+		if 'full_record' in options and options['full_record'] != '':
 			self.full_record = True 
 			if not os.path.exists(options['full_record']):
 				with open(options['full_record'],'w') as f:
@@ -45,7 +45,7 @@ class Game(object):
 		self.turn = 0
 		if 'game_record_filename' not in options:
 			self.record_game=False
-		elif options['game_record_filename'] <> '':
+		elif options['game_record_filename'] != '':
 			self.record_game = True
 			self.game_record_file = open(options['game_record_filename'], 'a')
 		else:
@@ -55,7 +55,7 @@ class Game(object):
 
 	def run(self, silent=False):
 		if not silent:
-			print 'Beginning game #%s' % self.id 
+			print('Beginning game #%s' % self.id) 
 		if self.record_game:
 			self.game_record_file.write('---BEGIN GAME %s---\n' % self.id)
 		current_player = self.players[0]
@@ -73,11 +73,11 @@ class Game(object):
 			else:
 				current_player = self.get_next_player(current_player)
 			if self.turn % 200 == 0 and not silent:
-				print 'turn %s' % self.turn
+				print('turn %s' % self.turn)
 				for player in self.players:
-					print player.coins
+					print(player.coins)
 		if not silent:
-			print 'Player %d, order %d won in %d turns' % (current_player.id, current_player.order, self.turn) 
+			print('Player %d, order %d won in %d turns' % (current_player.id, current_player.order, self.turn)) 
 		self.completed=True
 		if self.record_game:
 			self.game_record_file.write('Player %d, order %d won in %d turns\n' % (current_player.id, current_player.order, self.turn) )

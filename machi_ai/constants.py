@@ -93,7 +93,7 @@ player_limit = dotdict({
 	'radio_tower':1
 })
 
-BUILDING_ORDER = player_limit.keys()
+BUILDING_ORDER = list(player_limit.keys())
 BUILDING_ORDER.sort()
 
 BUILDING_INDEX = {key:i for i, key in enumerate(BUILDING_ORDER)}

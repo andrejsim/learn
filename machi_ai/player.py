@@ -10,6 +10,7 @@ from random import random
 from random import shuffle
 
 from numpy.random import choice as rchoice
+from functools import reduce
 
 use_max_probability = True
 
@@ -35,7 +36,7 @@ def choose_from_probs(probs, constraint_mask = None):
 			probs = probs * constraint_mask
 	
 	probs = probs/np.sum(probs)
-	choice = rchoice(range(len(probs)), size=1, p=probs)
+	choice = rchoice(list(range(len(probs))), size=1, p=probs)
 	return choice[0]
 
 class Player(object):
@@ -181,7 +182,7 @@ class Player(object):
 			self.AI.steal_ai = load_model(self.name + '_steal_ai_%d.h5' % self.id)
 			self.AI.swap_ai = load_model(self.name + '_swap_ai_%d.h5' % self.id)
 			self.AI.buy_ai = load_model(self.name + '_buy_ai_%d.h5' % self.id)
-		print 'loaded ai'
+		print('loaded ai')
 
 	def save_ai(self):
 		#dice
@@ -198,7 +199,7 @@ class Player(object):
 			ai.steal_ai.save(self.name + '_steal_ai_%d.h5' % self.id)
 			ai.swap_ai.save(self.name + '_swap_ai_%d.h5' % self.id)
 			ai.buy_ai.save(self.name + '_buy_ai_%d.h5' % self.id)
-		print 'saved AI'
+		print('saved AI')
 
 
 	def get_next_player(self, offset=1):
@@ -247,7 +248,7 @@ class Player(object):
 
 		#buy
 		self.decide_buy()
-		if self.buy_choice <> 19:
+		if self.buy_choice != 19:
 			self.buildings[BUILDING_ORDER[self.buy_choice]] += 1
 			self.game.building_supply[BUILDING_ORDER[self.buy_choice]] -= 1
 			self.coins -= building_cost[BUILDING_ORDER[self.buy_choice]]
@@ -361,7 +362,7 @@ class Player(object):
 		return 0
 
 	def calculate_purple(self):
-		if self.roll_value <> 6:
+		if self.roll_value != 6:
 			return 0 
 		#steal 2 coins from each other player
 		if self.buildings.stadium:
