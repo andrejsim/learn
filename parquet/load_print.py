@@ -1,8 +1,9 @@
 import os
+import pandas as pd
 import xarray as xr
 import pyarrow as pa
 import pyarrow.parquet as pq
-
+from pprint import pprint
 
 def size_mb(size):
     return size / (1024.0*1024.0)
@@ -38,7 +39,6 @@ def main():
     for f in [f1, fp1, f2, fp2,  fp3]:
         print("{}           {} MB".format(f, size_mb(os.path.getsize(f))))
 
-    print(fp3.info())
 
 if __name__ == '__main__':
     main()
