@@ -1,0 +1,16 @@
+# workshop 2020-01-29
+https://ml-on-aws.labgui.de
+https://dashboard.eventengine.run/dashboard
+
+# gustavo
+#  - ai intro
+#  - inference cost reduced ?
+#  - fast performentce ?
+#  - data labeling cost reduction ?
+#  - services... sagemaker
+#  - chatbox: lex
+#  - vision: rekognition img
+
+# other
+# use... aws... services....
+
