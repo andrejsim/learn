@@ -14,3 +14,8 @@ https://dashboard.eventengine.run/dashboard
 # other
 # use... aws... services....
 
+https://github.com/johanneslanger/aws-ai-ml-workshop
+https://github.com/awslabs/amazon-sagemaker-examples/blob/master/introduction_to_amazon_algorithms/linear_learner_mnist/linear_learner_mnist.ipynb
+
+
+
